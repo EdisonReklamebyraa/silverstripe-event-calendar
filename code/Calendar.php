@@ -339,6 +339,7 @@ class Calendar extends Page {
 		} else {
 			$end = $start;
 		}
+		$end->set($end->get()+24*3600);
 
 		$feeds = $this->Feeds();
 		$feedevents = new ArrayList();
