@@ -433,6 +433,7 @@ class Calendar extends Page {
 				}
 			}
 		}
+		$calendar->setOption('livemode', 'yes');
 		return $calendar;
 	}
 

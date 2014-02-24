@@ -48,6 +48,11 @@ function setSelection(calendar) {
 
 }
 
+function isLiveMode(calendar) {
+	var liveMode = $(calendar.getContainer()).data('livemode');
+	return liveMode === undefined || liveMode == 'yes';
+}
+
 $('.calendar-widget').each(function() {
 	var opts = {
 		onShowDay: function(date) {
@@ -61,13 +66,15 @@ $('.calendar-widget').each(function() {
 		},
 
 		onMonthChange: function(month, year, calendar) {
-			var json;
-			m = calendar.pad(month);		
-			if(!loaded_months[year+m]) {
-				loadMonthJson(m, year);
+			if (isLiveMode(calendar)) {
+				var json;
+				m = calendar.pad(month);		
+				if(!loaded_months[year+m]) {
+					loadMonthJson(m, year);
+				}
+				json = loaded_months[year+m];
+				applyMonthJson(m, year);
 			}
-			json = loaded_months[year+m];
-			applyMonthJson(m, year);
 			setSelection(calendar);
 		},
 
@@ -82,23 +89,25 @@ $('.calendar-widget').each(function() {
 			prev_year = previous[1];
 			next_year = next[1];
 
-			loadMonthJson(
-				this_month,
-				this_year
-			);
+			if (isLiveMode(calendar)) {
+				loadMonthJson(
+					this_month,
+					this_year
+				);
 
-			loadMonthJson(
-				prev_month,
-				prev_year
-			);
+				loadMonthJson(
+					prev_month,
+					prev_year
+				);
 
-			loadMonthJson(
-				next_month,
-				next_year
-			);
-			applyMonthJson(this_month, this_year);
-			applyMonthJson(prev_month, prev_year);
-			applyMonthJson(next_month, next_year);
+				loadMonthJson(
+					next_month,
+					next_year
+				);
+				applyMonthJson(this_month, this_year);
+				applyMonthJson(prev_month, prev_year);
+				applyMonthJson(next_month, next_year);
+			}
 
 			setSelection(calendar);
 			
