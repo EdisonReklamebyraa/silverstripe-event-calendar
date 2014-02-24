@@ -331,44 +331,47 @@ class Calendar extends Page {
 	}
 
 
-	public function getFeedEvents($start_date, $end_date) {
-		$start = sfDate::getInstance($start_date);
-		// single day views don't pass end dates
-		if ($end_date) {
-			$end = sfDate::getInstance($end_date);
+	public function getFeedEvents($filterStart, $filterEnd) {
+		// convert filter start and end dates to time stamps
+		$filterStart = sfDate::getInstance($filterStart)->get();
+		if ($filterEnd) { // single day views don't pass end dates
+			$filterEnd = sfDate::getInstance($filterEnd)->get();
 		} else {
-			$end = $start;
+			$filterEnd = $filterStart;
 		}
-		$end->set($end->get()+24*3600);
+		// set filter end to the end of the day (otherwise the last day of the
+		// filter range wouldn't be included)
+		$filterEnd += 24*3600;
 
 		$feeds = $this->Feeds();
-		$feedevents = new ArrayList();
+		$allEvents = new ArrayList();
 		foreach( $feeds as $feed ) {
-			$feedreader = new ICSReader( $feed->URL );
-			$events = $feedreader->getEvents();
-			foreach ( $events as $event ) {
-				// translate iCal schema into CalendarAnnouncement schema (datetime + title/content)
-				$feedevent = new CalendarAnnouncement;
-				$feedevent->Title = $event['SUMMARY'];
-				$feedevent->Content = $event['DESCRIPTION'];
-
-				$startdatetime = $this->iCalDateToDateTime($event['DTSTART']);
-				$enddatetime = $this->iCalDateToDateTime($event['DTEND']);
-				if ( ($startdatetime->get() < $start->get() && $enddatetime->get() < $start->get())
-					|| $startdatetime->get() > $end->get() && $enddatetime->get() > $end->get()) {
+			$icsReader = new SG_iCal($feed->URL);
+			$icsEvents = $icsReader->getEvents();
+			foreach ($icsEvents as $icsEvent) {
+				if (($icsEvent->getStart() < $filterStart && $icsEvent->getEnd() < $filterStart)
+				 || ($icsEvent->getStart() > $filterEnd   && $icsEvent->getEnd() > $filterEnd  )) {
 					// do nothing; dates outside range
-				} else {
-					$feedevent->StartDate = $startdatetime->format('Y-m-d');
-					$feedevent->StartTime = $startdatetime->format('H:i:s');
-
-					$feedevent->EndDate = $enddatetime->format('Y-m-d');
-					$feedevent->EndTime = $enddatetime->format('H:i:s');
-
-					$feedevents->push($feedevent);
+					continue;
 				}
+
+				$event = new CalendarAnnouncement;
+
+				$event->Title = $icsEvent->getSummary();
+				$event->Content = $icsEvent->getDescription();
+
+				$event->StartDate = date('Y-m-d', $icsEvent->getStart());
+				$event->StartTime = date('H:i:s', $icsEvent->getStart());
+
+				$event->EndDate = date('Y-m-d', $icsEvent->getEnd());
+				$event->EndTime = date('H:i:s', $icsEvent->getEnd());
+
+				$event->iCalEvent = $icsEvent;
+
+				$allEvents->push($event);
 			}
 		}
-		return $feedevents;
+		return $allEvents;
 	}
 
 	public function iCalDateToDateTime($date) {
