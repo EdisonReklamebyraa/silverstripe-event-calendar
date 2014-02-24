@@ -359,10 +359,10 @@ class Calendar extends Page {
 					// do nothing; dates outside range
 				} else {
 					$feedevent->StartDate = $startdatetime->format('Y-m-d');
-					$feedevent->StartTime = $startdatetime->format('G:i:s');
+					$feedevent->StartTime = $startdatetime->format('H:i:s');
 
 					$feedevent->EndDate = $enddatetime->format('Y-m-d');
-					$feedevent->EndTime = $enddatetime->format('G:i:s');
+					$feedevent->EndTime = $enddatetime->format('H:i:s');
 
 					$feedevents->push($feedevent);
 				}
