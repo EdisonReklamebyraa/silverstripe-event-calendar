@@ -25,8 +25,8 @@
 			this.firstDay = new Date(this.year, this.month, 1);
 			this.startingDay = this.firstDay.getDay();
 			if($.CalendarWidget.settings.startOnMonday) {
-				if(this.startingDay === 0) this.startingDay=6; else 
 				this.startingDay--;
+				if (this.startingDay < 0) this.startingDay += 7;
 			}			
 			this.monthLength = this.settings.calDaysInMonth[this.month];
 			// compensate for leap year
