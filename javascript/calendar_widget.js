@@ -229,8 +229,8 @@
 	    		c.setOptions(options);
 	    		c.attachTo(this);
 				var currentDate = new Date();
-		    	var year = options.year ? options.year : currentDate.getFullYear();
-		    	var month = options.month ? options.month : currentDate.getMonth();
+		    	var year = options.year >= 0 ? options.year : currentDate.getFullYear();
+		    	var month = options.month >= 0 ? options.month : currentDate.getMonth();
 		    	c.setMonth(month, year);
 		    	c.settings.onInit(c);
     		});
