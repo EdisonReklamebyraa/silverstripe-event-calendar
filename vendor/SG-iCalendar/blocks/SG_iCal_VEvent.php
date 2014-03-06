@@ -1,5 +1,4 @@
 <?php // BUILD: Remove line
-
 /**
  * The wrapper for vevents. Will reveal a unified and simple api for
  * the events, which include always finding a start and end (except
@@ -46,6 +45,7 @@ class SG_iCal_VEvent {
 	public function __construct($data, SG_iCal $ical) {
 
 		$this->uid = $data['uid']->getData();
+        $this->excluded = array();
 		unset($data['uid']);
 
 		if ( isset($data['rrule']) ) {

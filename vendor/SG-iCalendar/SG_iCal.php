@@ -61,7 +61,7 @@ class SG_iCal {
 	/**
 	 * Returns the main calendar info. You can then query the returned
 	 * object with ie getTitle().
-	 * @return SG_iCal_VCalendar
+	 * @return SG_iCal_VCalendar 
 	 */
 	public function getCalendarInfo() {
 		return $this->information;

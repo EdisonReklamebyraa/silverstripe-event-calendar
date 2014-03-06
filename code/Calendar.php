@@ -172,6 +172,7 @@ class Calendar extends Page {
 
         $eventList = new ArrayList();
 
+
         foreach($this->getAllCalendars() as $calendar) {
             if($events = $calendar->getStandardEvents($start, $end, $filter)) {
                 $eventList->merge($events);
@@ -331,6 +332,9 @@ class Calendar extends Page {
 
 
     public function getFeedEvents($filterStart, $filterEnd) {
+
+
+
         // convert filter start and end dates to time stamps
         $filterStart = sfDate::getInstance($filterStart)->get();
         if ($filterEnd) { // single day views don't pass end dates
@@ -342,35 +346,71 @@ class Calendar extends Page {
         // filter range wouldn't be included)
         $filterEnd += 24*3600;
 
+
+
+
         $feeds = $this->Feeds();
         $allEvents = new ArrayList();
+
         foreach( $feeds as $feed ) {
             $icsReader = new SG_iCal($feed->URL);
+
             $icsEvents = $icsReader->getEvents();
             foreach ($icsEvents as $icsEvent) {
-                if (($icsEvent->getStart() < $filterStart && $icsEvent->getEnd() < $filterStart)
-                || ($icsEvent->getStart() > $filterEnd   && $icsEvent->getEnd() > $filterEnd  )) {
-                    // do nothing; dates outside range
-                    continue;
+                if (isset($icsEvent->recurrence)) {
+                    $count = 0;
+                    $start = $icsEvent->getStart();
+                    $freq = $icsEvent->getFrequency();
+
+                    if(($freq->firstOccurrence() == $start) && $this->withinRange($icsEvent,$start,  $icsEvent->getEnd(), $filterStart, $filterEnd)){
+                        $allEvents->push($this->makeEvent($icsEvent, $start,  $icsEvent->getEnd()));
+                    }
+
+                    while (($next = $freq->nextOccurrence($start)) > 0 and $start < $filterEnd and $count <= 50 ) {
+
+
+
+
+                        $count++;
+                        $start = $next;
+                        $end = $start + $icsEvent->getDuration();
+
+
+
+                        if($this->withinRange($icsEvent,$start, $end,  $filterStart, $filterEnd))
+                            $allEvents->push($this->makeEvent($icsEvent, $start,$end));
+                    }
+
+                } else if($this->withinRange($icsEvent,$icsEvent->getStart(), $icsEvent->getEnd(), $filterStart, $filterEnd)){
+                    $allEvents->push($this->makeEvent($icsEvent,$icsEvent->getStart(), $icsEvent->getEnd() ));
                 }
-
-                $event = new CalendarAnnouncement;
-
-                $event->Title = $icsEvent->getSummary();
-                $event->Content = $icsEvent->getDescription();
-
-                $event->StartDate = date('Y-m-d', $icsEvent->getStart());
-                $event->StartTime = date('H:i:s', $icsEvent->getStart());
-
-                $event->EndDate = date('Y-m-d', $icsEvent->getEnd());
-                $event->EndTime = date('H:i:s', $icsEvent->getEnd());
-
-                $event->iCalEvent = $icsEvent;
-
-                $allEvents->push($event);
             }
         }
+
         return $allEvents;
+    }
+
+    private function withinRange($icsEvent,$start, $end, $filterStart, $filterEnd){
+        return !(($start < $filterStart && $end < $filterStart) || ($start > $filterEnd   && $end > $filterEnd  ));
+    }
+
+
+    private function makeEvent($icsEvent,$start, $end){
+        $event = new CalendarAnnouncement;
+
+        $event->Title = $icsEvent->getSummary();
+        $event->Content = $icsEvent->getDescription();
+
+        $event->StartDate = date('Y-m-d', $start);
+        $event->StartTime = date('H:i:s',$start);
+
+        $event->EndDate = date('Y-m-d',$end);
+        $event->EndTime = date('H:i:s', $end);
+
+        $event->ID =  $icsEvent->getUID();
+        $event->iCalEvent = $icsEvent;
+        return $event;
+
     }
 
     public function iCalDateToDateTime($date) {
@@ -655,7 +695,7 @@ class Calendar_Controller extends Page_Controller {
         if(!$r->param('ID')) return false;
         $this->startDate = sfDate::getInstance(CalendarUtil::get_date_from_string($r->param('ID')));
         $this->endDate = sfDate::getInstance($this->startDate)->finalDayOfMonth();
-
+        $this->EventsPerPage = 1000;
         $json = array ();
         $counter = clone $this->startDate;
         while($counter->get() <= $this->endDate->get()) {
