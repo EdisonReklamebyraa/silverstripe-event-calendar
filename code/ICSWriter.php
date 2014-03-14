@@ -61,7 +61,7 @@ class ICSWriter
     public function sendDownload() {
         header("Cache-Control: private");
         header("Content-Description: File Transfer");
-        header("Content-Type: text/calendar");
+        header("Content-type: text/calendar; charset=utf-8'");
         header("Content-Transfer-Encoding: binary");
         $filename = preg_replace("/[^a-zA-Z0-9s]/", "", $this->calendar->Title) . '.ics';
         if(stristr($_SERVER['HTTP_USER_AGENT'], "MSIE")) {

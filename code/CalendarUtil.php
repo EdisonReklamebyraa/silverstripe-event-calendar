@@ -103,8 +103,8 @@ class CalendarUtil {
 		$end = strtotime($end_date);
 		
 		$start_year = date("Y", $start);
-		$start_month = date("m", $start);
-		
+		$start_month = date("M", $start);
+	
 		$end_year = date("Y", $end);
 		$end_month = date("m", $end);
 		

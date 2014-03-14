@@ -59,6 +59,7 @@ class CalendarDateTime extends DataObject {
         }
 
         public function DateRange() {
+
                 list($strStartDate,$strEndDate) = CalendarUtil::get_date_string($this->StartDate,$this->EndDate);
                 $html =   "<span class='dtstart' title='".$this->MicroformatStart()."'>" . $strStartDate . "</span>";
                 $html .=	($strEndDate != "") ? "-" : "";
