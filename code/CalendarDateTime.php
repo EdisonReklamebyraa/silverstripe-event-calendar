@@ -66,7 +66,6 @@ class CalendarDateTime extends DataObject {
                 $html .= "<span class='dtend' title='" .$this->MicroformatEnd() ."'>";
                 $html .=    ($strEndDate != "") ? $strEndDate : "";
                 $html .=  "</span>";
-
                 return $html;
         }
 
