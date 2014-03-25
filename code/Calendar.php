@@ -407,7 +407,7 @@ class Calendar extends Page {
         $event->EndDate = date('Y-m-d',$end);
         $event->EndTime = date('H:i:s', $end);
 
-        $event->ID =  $icsEvent->getUID();
+        $event->ID =   $icsEvent->getUID();
         $event->iCalEvent = $icsEvent;
         return $event;
 
