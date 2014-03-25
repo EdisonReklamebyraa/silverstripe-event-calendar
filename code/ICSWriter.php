@@ -121,7 +121,11 @@ class ICSWriter
      * @author Alex Hayes <alex.hayes@dimension27.com>
      */
     protected function getUID( CalendarDateTime $dateTime ) {
-        return  ($dateTime->ID)?   $dateTime->ID: rand().'@'.$this->host;
+        $id = $dateTime->ID;
+        $id = ($id == 0)? rand(): $id;
+
+
+        return $id.'@'.$this->host;
     }
 
     /**
