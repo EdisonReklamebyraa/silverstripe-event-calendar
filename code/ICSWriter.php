@@ -172,7 +172,7 @@ class ICSWriter
         $this->addLine('UID:' . $this->getUID($dateTime) );
         $this->addLine('DTSTAMP;TZID=' . Calendar::config()->timezone . ':' . $this->getFormatedDateTime());
         $this->addLine('DTSTART;TZID=' . Calendar::config()->timezone . ':' . $this->getFormatedDateTime($dateTime->StartDate, $dateTime->StartTime));
-        $this->addLine('DTEND;TZID='   . Calendar::config()->timezone . ':' . $this->getFormatedDateTime($dateTime->StartDate, $dateTime->StartTime));
+        $this->addLine('DTEND;TZID='   . Calendar::config()->timezone . ':' . $this->getFormatedDateTime($dateTime->EndDate, $dateTime->EndTime));
         $this->addLine('URL:' . Director::absoluteURL($dateTime->ICSLink()));
         $this->addLine('SUMMARY:' . $this->removeJunk($dateTime->getTitle()));
         $this->addLine('DESCRIPTION:' . $this->removeJunk($dateTime->getContent()));
