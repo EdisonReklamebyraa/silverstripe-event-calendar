@@ -131,6 +131,11 @@ class CalendarEvent extends Page {
 		return $this->Parent()->CalendarWidget();
 	}
 
+
+
+
+    
+
 }
 
 class CalendarEvent_Controller extends Page_Controller {

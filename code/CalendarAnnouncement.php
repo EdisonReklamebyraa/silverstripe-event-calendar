@@ -39,4 +39,6 @@ class CalendarAnnouncement extends CalendarDateTime {
         return $this->getField('Content');
     }
 
+
+
 }

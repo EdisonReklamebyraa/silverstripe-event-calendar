@@ -166,8 +166,8 @@ class Calendar extends Page {
     }
 
     public function getEventList($start, $end, $filter = null, $limit = null, $announcement_filter = null) {
-        if(Config::inst()->get("Calendar", "caching_enabled")) {
-            return $this->getCachedEventList($start, $end, $filter, $limit);
+        if(Config::inst()->get("Calendar", "caching_enabled") && ( $eventList =  $this->getCachedEventList($start, $end, $filter, $limit) )&& $eventList->exists()) {
+            return $eventList;
         }
 
         $eventList = new ArrayList();
@@ -206,7 +206,6 @@ class Calendar extends Page {
 
         $eventList = $eventList->sort(array("StartDate" => "ASC", "StartTime" => "ASC"));
         $eventList = $eventList->limit($limit);
-
         return $this->EventList_cache = $eventList;
     }
 
@@ -419,8 +418,6 @@ class Calendar extends Page {
         $date = strtotime($date);
         return sfDate::getInstance($date);
     }
-
-
 
     public function getAllCalendars() {
         $calendars = new ArrayList();
@@ -858,6 +855,20 @@ class Calendar_Controller extends Page_Controller {
         $this->MoreLink = HTTP::setGetVar("start", $next);
         return $list;
     }
+
+
+    public function getGroupedEvents(){
+        return GroupedList::create($this->Events()->sort('StartDate'));
+    }
+
+
+    public function NiceDate($strDate){
+
+        return date("jS F, Y", strtotime($strDate));
+    }
+
+
+
 
     public function DateHeader() {
         switch($this->view) {
