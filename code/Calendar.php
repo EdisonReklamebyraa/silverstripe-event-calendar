@@ -863,8 +863,7 @@ class Calendar_Controller extends Page_Controller {
 
 
     public function NiceDate($strDate){
-
-        return date("jS F, Y", strtotime($strDate));
+        return date("j F, Y", strtotime($strDate))  ;
     }
 
 
