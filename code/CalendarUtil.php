@@ -115,7 +115,6 @@ class CalendarUtil {
         else if($start == $end || !$end || $end < 1) {
             $key = self::ONE_DAY;
         }
-
         else {
             if($start_year == $end_year) {
                 $key = ($start_month == $end_month) ? self::SAME_MONTH_SAME_YEAR : self::DIFF_MONTH_SAME_YEAR;

@@ -375,7 +375,6 @@ class Calendar extends Page {
                         $end = $start + $icsEvent->getDuration();
 
 
-
                         if($this->withinRange($icsEvent,$start, $end,  $filterStart, $filterEnd))
                             $allEvents->push($this->makeEvent($icsEvent, $start,$end));
                     }
@@ -406,7 +405,12 @@ class Calendar extends Page {
         $event->EndDate = date('Y-m-d',$end );
         $event->EndTime = date('H:i:s', $end );
 
+        $event->AllDay = $icsEvent->isWholeDay();
+
+
         $event->ID =   $icsEvent->getUID();
+
+
         $event->iCalEvent = $icsEvent;
         return $event;
 
@@ -863,7 +867,7 @@ class Calendar_Controller extends Page_Controller {
 
 
     public function NiceDate($strDate){
-        return strftime("%d %B %Y", strtotime($strDate))  ;
+        return strftime("%d. %b. %Y", strtotime($strDate))  ;
     }
 
 
@@ -895,7 +899,9 @@ class Calendar_Controller extends Page_Controller {
             break;
         }
     }
-
+    public function GLink() {
+      return "https://www.google.com/calendar/render?cid=".urlencode($this->AbsoluteLink() )."ical";
+    }
     public function CurrentAction($a) {
         return $this->getAction() == $a;
     }

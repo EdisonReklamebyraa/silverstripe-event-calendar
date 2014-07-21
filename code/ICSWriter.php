@@ -63,7 +63,8 @@ class ICSWriter
         header("Content-Description: File Transfer");
         header("Content-type: text/calendar; charset=UTF-8");
         header("Content-Transfer-Encoding: binary");
-        $filename = preg_replace("/[^a-zA-Z0-9s]/", "", $this->calendar->Title) . '.ics';
+
+        $filename = preg_replace("/[^a-zA-Z0-9s]/", "", $this->calendar->Parent->Title) . '.ics';
         if(stristr($_SERVER['HTTP_USER_AGENT'], "MSIE")) {
             header("Content-disposition: filename=" . $filename . "; attachment;");
         } else {
@@ -82,7 +83,7 @@ class ICSWriter
 
         $this->addLine('BEGIN:VCALENDAR');
         $this->addLine('VERSION:2.0');
-
+        $this->addLine('X-WR-CALNAME:'.$this->calendar->Parent->Title);
         if( is_null($this->prodid) ) {
             $this->addLine("PRODID:" . '-//'.$this->host.'//NONSGML v1.0//EN');
         }
