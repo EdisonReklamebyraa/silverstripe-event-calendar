@@ -899,9 +899,15 @@ class Calendar_Controller extends Page_Controller {
             break;
         }
     }
+
     public function GLink() {
-      return "https://www.google.com/calendar/render?cid=".urlencode($this->AbsoluteLink() )."ical";
+        $feeds = $this->Feeds(); 
+        if($feeds->Count() > 0){
+            return "https://www.google.com/calendar/render?cid=".$this->Feeds()[0]->URL;            
+        }
     }
+
+
     public function CurrentAction($a) {
         return $this->getAction() == $a;
     }
