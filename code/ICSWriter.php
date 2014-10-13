@@ -63,7 +63,8 @@ class ICSWriter
         header("Content-Description: File Transfer");
         header("Content-type: text/calendar; charset=UTF-8");
         header("Content-Transfer-Encoding: binary");
-        $filename = preg_replace("/[^a-zA-Z0-9s]/", "", $this->calendar->Title) . '.ics';
+
+        $filename = preg_replace("/[^a-zA-Z0-9s]/", "", $this->calendar->Parent->Title) . '.ics';
         if(stristr($_SERVER['HTTP_USER_AGENT'], "MSIE")) {
             header("Content-disposition: filename=" . $filename . "; attachment;");
         } else {
@@ -82,7 +83,7 @@ class ICSWriter
 
         $this->addLine('BEGIN:VCALENDAR');
         $this->addLine('VERSION:2.0');
-
+        $this->addLine('X-WR-CALNAME:'.$this->calendar->Parent->Title);
         if( is_null($this->prodid) ) {
             $this->addLine("PRODID:" . '-//'.$this->host.'//NONSGML v1.0//EN');
         }
@@ -170,10 +171,10 @@ class ICSWriter
     protected function addDateTime( CalendarDateTime $dateTime ) {
         $this->addLine('BEGIN:VEVENT');
         $this->addLine('UID:' . $this->getUID($dateTime) );
-        $this->addLine('DTSTAMP;TZID=' . Calendar::config()->timezone . ':' . $this->getFormatedDateTime());
-        $this->addLine('DTSTART;TZID=' . Calendar::config()->timezone . ':' . $this->getFormatedDateTime($dateTime->StartDate, $dateTime->StartTime));
-        $this->addLine('DTEND;TZID='   . Calendar::config()->timezone . ':' . $this->getFormatedDateTime($dateTime->EndDate, $dateTime->EndTime));
-        $this->addLine('URL:' . Director::absoluteURL($dateTime->ICSLink()));
+        $this->addLine('DTSTAMP:' . $this->getFormatedDateTime());
+        $this->addLine('DTSTART:' . $this->getFormatedDateTime($dateTime->StartDate, $dateTime->StartTime));
+        $this->addLine('DTEND:' . $this->getFormatedDateTime($dateTime->EndDate, $dateTime->EndTime));
+        $this->addLine('URL:' . Director::absoluteURL($this->calendar->Link() . $dateTime->Link()));
         $this->addLine('SUMMARY:' . $this->removeJunk($dateTime->getTitle()));
         $this->addLine('DESCRIPTION:' . $this->removeJunk($dateTime->getContent()));
         $this->addLine('END:VEVENT');
